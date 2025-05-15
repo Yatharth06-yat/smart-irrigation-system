@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart Irrigation Dashboard</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: linear-gradient(to right, #c1bcaf, #615d53);
+      color: #630000;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+
+    header {
+      display: flex;
+      text-align: center;
+      margin-bottom: 2rem;
+      margin: auto;
+    }
+
+    header h1 {
+      font-size: 2.5rem;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+    }
+
+    .card {
+      background: rgba(230, 240, 215, 0.6);
+      backdrop-filter: blur(12px);
+      border-radius: 20px;
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      padding: 1.5rem;
+      text-align: center;
+      transition: transform 0.2s;
+      margin-top: 20px;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .card h3 {
+      margin-bottom: 0.5rem;
+      font-size: 1.2rem;
+      color: #444;
+    }
+
+    .card p {
+      font-size: 2rem;
+      font-weight: bold;
+    }
+
+    button {
+      padding: 0.6rem 1.2rem;
+      background-color: #4caf50;
+      border: none;
+      border-radius: 10px;
+      color: white;
+      font-size: 1rem;
+      cursor: pointer;
+      margin: 0.3rem;
+    }
+
+    button:hover {
+      background-color: #45a049;
+    }
+
+    canvas {
+      background: white;
+      border-radius: 20px;
+      padding: 1rem;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #555;
+    }
+
+    #voice-status {
+      font-size: 1.2rem;
+      color: #333;
+      margin-top: 1rem;
+      text-align: center;
+    }
+
+    .vvv {
+      height: 100px;
+    }
+
+    .ll {
+      margin-left: 600px;
+    }
+
+    .yatharth {
+      background: linear-gradient(to right, #457a74, #7a7057);
+      height: 60px;
+    }
+
+    .logo {
+      height: 40px;
+
+    }
+  </style>
+</head>
+
+<body>
+  <header>
+    <h1>🌿 Smart Irrigation Dashboard</h1>
+    <div class="ll">
+      <img class="vvv" src="image.png" alt="Weather Logo" />
+
+      <!-- 🕒 Current Date and Time -->
+      <div class="date-time">
+        <p id="date"></p>
+        <p id="time"></p>
+      </div>
+  </header>
+  </div>
+
+  </header>
+
+  <section class="grid">
+    <div class="card">
+      <h3>🌡 Temperature</h3>
+      <p id="temp">-- °C</p>
+    </div>
+    <div class="card">
+      <h3>💧 Humidity</h3>
+      <p id="hum">-- %</p>
+    </div>
+    <div class="card">
+      <h3>🌱 Soil Moisture</h3>
+      <p id="soil">-- %</p>
+    </div>
+    <div class="card">
+      <h3>🌧 Rain Status</h3>
+      <p id="rain">--</p>
+    </div>
+    <div class="card">
+      <h3>🚰 Pump Control</h3>
+      <p id="pump">--</p>
+      <button onclick="togglePump('on')">Turn ON</button>
+      <button onclick="togglePump('off')">Turn OFF</button>
+    </div>
+    <div class="card">
+      <h3>🎙 Voice Control</h3>
+      <button onclick="startVoiceControl()">Start Voice Control</button>
+      <p id="voice-status">Voice command status: Waiting...</p>
+    </div>
+  </section>
+
+  <section style="margin-top: 3rem">
+    <canvas id="sensorChart"></canvas>
+  </section>
+
+  <p class="footer">Last Updated: <span id="last-update">--</span></p>
+  <audio id="rain-audio" src="https://cdn.pixabay.com/download/audio/2022/03/25/audio_8a01f9a3f8.mp3"
+    preload="audio"></audio>
+  <div class=" yatharth" style="display: flex; flex-direction: column; align-items: center; margin-bottom: 8px;">
+    <div style="display: flex; gap: 16px;">
+
+      <a href="https://www.linkedin.com/in/yatharth gupta" target="_blank" class="icon-container">
+        <span class="tooltip">yatharth </span>
+        <img class="logo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg"
+          alt="LinkedIn">
+      </a>
+      <a href="https://github.com/Yatharth06-yat" target="_blank" class="icon-container">
+        <span class="tooltip">yatharth </span>
+        <img class="logo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
+          alt="GitHub">
+      </a>
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
+    import { getDatabase, set, ref, onValue } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-database.js";
+
+    const firebaseConfig = {
+      apiKey: "AIzaSyA53NYitrtQCy9l7uC8V2VjbNCgGuS_xes",
+      authDomain: "smart-irrigation-system-f09a5.firebaseapp.com",
+      projectId: "smart-irrigation-system-f09a5",
+      storageBucket: "smart-irrigation-system-f09a5.firebasestorage.app",
+      messagingSenderId: "969468863049",
+      appId: "1:969468863049:web:514267b1ac62ed3edcd598",
+      measurementId: "G-1GNFHFYGJV"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const sensorRef = ref(db, "/sensors");
+
+    let tempData = [], humData = [], labels = [], rainPreviouslyDetected = false, chart;
+
+    function createChart() {
+      const ctx = document.getElementById("sensorChart").getContext("2d");
+      chart = new Chart(ctx, {
+        type: "line",
+        data: {
+          labels: labels,
+          datasets: [
+            {
+              label: "Temperature (°C)",
+              data: tempData,
+              borderColor: "rgba(255, 99, 132, 1)",
+              fill: false,
+              tension: 0.4
+            },
+            {
+              label: "Humidity (%)",
+              data: humData,
+              borderColor: "rgba(54, 162, 235, 1)",
+              fill: false,
+              tension: 0.4
+            }
+          ]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            x: { title: { display: true, text: "Time" } },
+            y: { beginAtZero: true }
+          }
+        }
+      });
+    }
+
+    function getData() {
+      onValue(sensorRef, (snapshot) => {
+        const data = snapshot.val();
+        document.getElementById("temp").textContent = `${data.temperature} °C`;
+        document.getElementById("hum").textContent = `${data.humidity} %`;
+        document.getElementById("soil").textContent = `${data.soil} %`;
+        const isRaining = data.rain == 1;
+        document.getElementById("rain").textContent = isRaining ? "No" : "Yes";
+        document.getElementById("pump").textContent = data.pump == 1 ? "ON" : "OFF";
+        const now = new Date().toLocaleTimeString();
+        document.getElementById("last-update").textContent = now;
+
+        labels.push(now);
+        tempData.push(data.temperature);
+        humData.push(data.humidity);
+        if (labels.length > 10) {
+          labels.shift();
+          tempData.shift();
+          humData.shift();
+        }
+        if (chart) chart.update();
+
+        if (isRaining && !rainPreviouslyDetected) {
+          document.getElementById("rain-audio").play();
+          togglePump("off");
+          rainPreviouslyDetected = true;
+        }
+        if (!isRaining) rainPreviouslyDetected = false;
+      });
+    }
+
+    window.togglePump = async function (status) {
+      await set(ref(db, 'sensors/pump'), status === "on" ? 1 : 0);
+    };
+
+    window.startVoiceControl = function () {
+      if (!('webkitSpeechRecognition' in window)) {
+        alert("Voice recognition not supported!");
+        return;
+      }
+      const recognition = new webkitSpeechRecognition();
+      recognition.lang = "en-US";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      document.getElementById("voice-status").textContent = "Listening for command...";
+      recognition.onresult = function (event) {
+        const command = event.results[0][0].transcript.toLowerCase();
+        if (command.includes("on")) {
+          togglePump("on");
+          document.getElementById("voice-status").textContent = "Voice command: Pump ON";
+        } else if (command.includes("off")) {
+          togglePump("off");
+          document.getElementById("voice-status").textContent = "Voice command: Pump OFF";
+        } else {
+          document.getElementById("voice-status").textContent = "Voice command: Invalid, say 'on' or 'off'.";
+        }
+      };
+      recognition.onerror = function (event) {
+        console.error("Speech error:", event.error);
+      };
+      recognition.start();
+    };
+
+    createChart();
+    setInterval(getData, 1000);
+    function updateDateTime() {
+      const date = new Date();
+      const formattedDate = date.toLocaleDateString();
+      const formattedTime = date.toLocaleTimeString();
+      document.getElementById("date").textContent = formattedDate;
+      document.getElementById("time").textContent = formattedTime;
+    }
+    setInterval(updateDateTime, 1000);
+    updateDateTime();
+  </script>
+</body>
+
+</html>
