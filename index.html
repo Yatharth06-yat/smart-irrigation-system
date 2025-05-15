@@ -45,11 +45,12 @@
       background: rgba(230, 240, 215, 0.6);
       backdrop-filter: blur(12px);
       border-radius: 20px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
+      box-shadow: 0px 30px 30px rgba(0, 0, 0, 0.1);
       padding: 1.5rem;
       text-align: center;
       transition: transform 0.2s;
       margin-top: 20px;
+      border: solid 3px black;
     }
 
     .card:hover {
@@ -94,6 +95,7 @@
       text-align: center;
       font-size: 0.9rem;
       color: #555;
+
     }
 
     #voice-status {
@@ -114,24 +116,34 @@
     .yatharth {
       background: linear-gradient(to right, #457a74, #7a7057);
       height: 60px;
+
     }
 
     .logo {
-  height: 32px;
-  transition: transform 0.3s;
-}
+      height: 32px;
+      transition: transform 0.3s;
+    }
 
-.logo:hover {
-  transform: scale(1.2);
-}
-.yatharthy{
-  display: flex; 
-  justify-content: center;
-   gap: 20px;
-    margin-top: 10px;
-    
-}
+    .logo:hover {
+      transform: scale(1.2);
+    }
 
+    .yatharthy {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-top: 10px;
+
+
+    }
+
+    .ft {
+      margin-top: 3rem;
+      padding: 1rem;
+      background: linear-gradient(to right, rgb(167, 213, 175), #7d7153);
+      border: solid 3px black;
+      border-radius: 20px;
+    }
   </style>
 </head>
 
@@ -181,41 +193,45 @@
     </div>
   </section>
 
-  <section style="margin-top: 3rem">
+  <section style="margin-top: 3rem ;height: 300px;">
     <canvas id="sensorChart"></canvas>
   </section>
 
   <p class="footer">Last Updated: <span id="last-update">--</span></p>
   <audio id="rain-audio" src="https://cdn.pixabay.com/download/audio/2022/03/25/audio_8a01f9a3f8.mp3"
     preload="audio"></audio>
-    <footer style="margin-top: 3rem; padding: 1rem;background: linear-gradient(to right,rgb(167, 213, 175), #7d7153); border-top: 1px solid #a07272; border-radius: 20px;">
-      <div style="text-align: center; font-size: 0.9rem; color: black;">
-        <strong>🌿 Smart Irrigation Dashboard</strong><br>
-        A Smart Monitoring Platform for optimizing your irrigation and conserving water<br><br>
-    
-        <!-- Social Icons -->
-        <div class="yatharthy">
-          <a href="https://www.linkedin.com/in/yatharth gupta" target="_blank" title="LinkedIn">
-            <img class="logo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg" alt="LinkedIn" />
-          </a>
-          <a href="https://github.com/Yatharth06-yat" target="_blank" title="GitHub">
-            <img class="logo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub" />
-          </a>
-        
+  <footer class="ft">
+    <div style="text-align: center; font-size: 0.9rem; color: black;">
+      <strong>🌿 Smart Irrigation Dashboard</strong><br>
+      A Smart Monitoring Platform for optimizing your irrigation and conserving water<br><br>
+
+      <!-- Social Icons -->
+      <div class="yatharthy">
         <a href="https://www.linkedin.com/in/yatharth gupta" target="_blank" title="LinkedIn">
-          <img class="logo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg" alt="LinkedIn" />
+          <img class="logo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg"
+            alt="LinkedIn" />
         </a>
         <a href="https://github.com/Yatharth06-yat" target="_blank" title="GitHub">
-          <img class="logo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg" alt="GitHub" />
+          <img class="logo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
+            alt="GitHub" />
+        </a>
+
+        <a href="https://www.linkedin.com/in/yatharth gupta" target="_blank" title="LinkedIn">
+          <img class="logo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg"
+            alt="LinkedIn" />
+        </a>
+        <a href="https://github.com/Yatharth06-yat" target="_blank" title="GitHub">
+          <img class="logo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
+            alt="GitHub" />
         </a>
       </div>
-  
+
       <p style="margin-top: 10px;">© 2025 Smart Irrigation Dashboard</p>
       <p>Developed by Yatharth Gupta & vivek yadav</p>
-      </div>
-    </footer>
-    
     </div>
+  </footer>
+
+  </div>
   </div>
 
   <script type="module">
