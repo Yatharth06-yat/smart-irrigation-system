@@ -23,10 +23,8 @@
     }
 
     header {
-      display: flex;
       text-align: center;
       margin-bottom: 2rem;
-      margin: auto;
     }
 
     header h1 {
@@ -49,7 +47,6 @@
       padding: 1.5rem;
       text-align: center;
       transition: transform 0.2s;
-      margin-top: 20px;
       border: solid 3px black;
     }
 
@@ -95,7 +92,6 @@
       text-align: center;
       font-size: 0.9rem;
       color: #555;
-
     }
 
     #voice-status {
@@ -105,12 +101,20 @@
       text-align: center;
     }
 
-    .vvv {
-      height: 100px;
+    .ft {
+      margin-top: 3rem;
+      padding: 1rem;
+      background: linear-gradient(to right, rgb(167, 213, 175), #7d7153);
+      border: solid 3px black;
+      border-radius: 20px;
     }
 
-    .ll {
-      margin-left: 600px;
+    .footer {
+      margin-top: 2rem;
+      text-align: center;
+      font-size: 0.9rem;
+      color: #555;
+
     }
 
     .yatharth {
@@ -136,31 +140,16 @@
 
 
     }
-
-    .ft {
-      margin-top: 3rem;
-      padding: 1rem;
-      background: linear-gradient(to right, rgb(167, 213, 175), #7d7153);
-      border: solid 3px black;
-      border-radius: 20px;
-    }
   </style>
 </head>
 
 <body>
   <header>
     <h1>🌿 Smart Irrigation Dashboard</h1>
-    <div class="ll">
-      <img class="vvv" src="image.png" alt="Weather Logo" />
-
-      <!-- 🕒 Current Date and Time -->
-      <div class="date-time">
-        <p id="date"></p>
-        <p id="time"></p>
-      </div>
-  </header>
-  </div>
-
+    <div>
+      <p id="date"></p>
+      <p id="time"></p>
+    </div>
   </header>
 
   <section class="grid">
@@ -199,7 +188,7 @@
 
   <p class="footer">Last Updated: <span id="last-update">--</span></p>
   <audio id="rain-audio" src="https://cdn.pixabay.com/download/audio/2022/03/25/audio_8a01f9a3f8.mp3"
-    preload="audio"></audio>
+    preload="auto"></audio>
   <footer class="ft">
     <div style="text-align: center; font-size: 0.9rem; color: black;">
       <strong>🌿 Smart Irrigation Dashboard</strong><br>
@@ -209,48 +198,29 @@
       <div class="yatharthy">
         <a href="https://www.linkedin.com/in/yatharth gupta" target="_blank" title="LinkedIn">
           <img class="logo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg"
-            alt="LinkedIn" />
+            alt="LinkedIn">
         </a>
         <a href="https://github.com/Yatharth06-yat" target="_blank" title="GitHub">
           <img class="logo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
-            alt="GitHub" />
+            alt="GitHub">
         </a>
 
         <a href="https://www.linkedin.com/in/yatharth gupta" target="_blank" title="LinkedIn">
           <img class="logo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/linkedin/linkedin-original.svg"
-            alt="LinkedIn" />
+            alt="LinkedIn">
         </a>
         <a href="https://github.com/Yatharth06-yat" target="_blank" title="GitHub">
           <img class="logo" src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/github/github-original.svg"
-            alt="GitHub" />
+            alt="GitHub">
         </a>
       </div>
 
       <p style="margin-top: 10px;">© 2025 Smart Irrigation Dashboard</p>
-      <p>Developed by Yatharth Gupta & vivek yadav</p>
+      <p>Developed by Yatharth Gupta &amp; vivek yadav</p>
     </div>
   </footer>
-
-  </div>
-  </div>
-
-  <script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-app.js";
-    import { getDatabase, set, ref, onValue } from "https://www.gstatic.com/firebasejs/11.7.1/firebase-database.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyA53NYitrtQCy9l7uC8V2VjbNCgGuS_xes",
-      authDomain: "smart-irrigation-system-f09a5.firebaseapp.com",
-      projectId: "smart-irrigation-system-f09a5",
-      storageBucket: "smart-irrigation-system-f09a5.firebasestorage.app",
-      messagingSenderId: "969468863049",
-      appId: "1:969468863049:web:514267b1ac62ed3edcd598",
-      measurementId: "G-1GNFHFYGJV"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const db = getDatabase(app);
-    const sensorRef = ref(db, "/sensors");
+  <script>
+    const ESP32_IP = "http://192.168.1.100"; // replace with your ESP32 IP
 
     let tempData = [], humData = [], labels = [], rainPreviouslyDetected = false, chart;
 
@@ -287,15 +257,18 @@
       });
     }
 
-    function getData() {
-      onValue(sensorRef, (snapshot) => {
-        const data = snapshot.val();
+    async function fetchData() {
+      try {
+        const response = await fetch(`${ESP32_IP}/sensors`);
+        const data = await response.json();
+
         document.getElementById("temp").textContent = `${data.temperature} °C`;
         document.getElementById("hum").textContent = `${data.humidity} %`;
         document.getElementById("soil").textContent = `${data.soil} %`;
         const isRaining = data.rain == 1;
-        document.getElementById("rain").textContent = isRaining ? "No" : "Yes";
+        document.getElementById("rain").textContent = isRaining ? "Yes" : "No";
         document.getElementById("pump").textContent = data.pump == 1 ? "ON" : "OFF";
+
         const now = new Date().toLocaleTimeString();
         document.getElementById("last-update").textContent = now;
 
@@ -303,9 +276,7 @@
         tempData.push(data.temperature);
         humData.push(data.humidity);
         if (labels.length > 10) {
-          labels.shift();
-          tempData.shift();
-          humData.shift();
+          labels.shift(); tempData.shift(); humData.shift();
         }
         if (chart) chart.update();
 
@@ -315,14 +286,22 @@
           rainPreviouslyDetected = true;
         }
         if (!isRaining) rainPreviouslyDetected = false;
-      });
+
+      } catch (error) {
+        console.error("Error fetching data from ESP32:", error);
+      }
     }
 
-    window.togglePump = async function (status) {
-      await set(ref(db, 'sensors/pump'), status === "on" ? 1 : 0);
-    };
+    async function togglePump(status) {
+      try {
+        await fetch(`${ESP32_IP}/pump?status=${status}`);
+      } catch (err) {
+        alert("Failed to toggle pump");
+        console.error(err);
+      }
+    }
 
-    window.startVoiceControl = function () {
+    function startVoiceControl() {
       if (!('webkitSpeechRecognition' in window)) {
         alert("Voice recognition not supported!");
         return;
@@ -349,17 +328,16 @@
         console.error("Speech error:", event.error);
       };
       recognition.start();
-    };
+    }
+
+    function updateDateTime() {
+      const now = new Date();
+      document.getElementById("date").textContent = now.toLocaleDateString();
+      document.getElementById("time").textContent = now.toLocaleTimeString();
+    }
 
     createChart();
-    setInterval(getData, 1000);
-    function updateDateTime() {
-      const date = new Date();
-      const formattedDate = date.toLocaleDateString();
-      const formattedTime = date.toLocaleTimeString();
-      document.getElementById("date").textContent = formattedDate;
-      document.getElementById("time").textContent = formattedTime;
-    }
+    setInterval(fetchData, 1000);
     setInterval(updateDateTime, 1000);
     updateDateTime();
   </script>
